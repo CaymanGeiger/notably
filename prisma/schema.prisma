@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum WorkspaceRole {
+  OWNER
+  MEMBER
+}
+
+enum NotePermissionRole {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+model User {
+  id                 String            @id @default(cuid())
+  email              String            @unique
+  name               String?
+  passwordHash       String
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  workspacesCreated  Workspace[]       @relation("WorkspaceCreator")
+  workspaceMembers   WorkspaceMember[]
+  notesCreated       Note[]            @relation("NoteCreator")
+  templatesCreated   NoteTemplate[]    @relation("TemplateCreator")
+  notePermissions    NotePermission[]
+  noteMessages       NoteMessage[]
+  noteSnapshots      NoteSnapshot[]    @relation("SnapshotCreator")
+  sessions           Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Workspace {
+  id          String            @id @default(cuid())
+  name        String
+  createdById String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  createdBy   User              @relation("WorkspaceCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  members     WorkspaceMember[]
+  notes       Note[]
+  templates   NoteTemplate[]
+}
+
+model WorkspaceMember {
+  id          String        @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceRole @default(MEMBER)
+  createdAt   DateTime      @default(now())
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+}
+
+model Note {
+  id               String            @id @default(cuid())
+  title            String
+  contentYdocState String?
+  workspaceId      String
+  createdById      String
+  roomId           String            @unique
+  viewerCanMessage Boolean           @default(true)
+  archivedAt       DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  workspace        Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy        User              @relation("NoteCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  permissions      NotePermission[]
+  messages         NoteMessage[]
+  snapshots        NoteSnapshot[]
+
+  @@index([workspaceId])
+  @@index([createdById])
+}
+
+model NoteTemplate {
+  id               String    @id @default(cuid())
+  name             String
+  description      String?
+  contentYdocState String?
+  workspaceId      String
+  createdById      String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  workspace        Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy        User      @relation("TemplateCreator", fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([createdById])
+}
+
+model NotePermission {
+  id        String             @id @default(cuid())
+  noteId    String
+  userId    String
+  role      NotePermissionRole
+  createdAt DateTime           @default(now())
+  note      Note               @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([noteId, userId])
+  @@index([userId])
+}
+
+model NoteMessage {
+  id        String   @id @default(cuid())
+  noteId    String
+  userId    String
+  body      String
+  createdAt DateTime @default(now())
+  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([noteId, createdAt])
+  @@index([userId])
+}
+
+model NoteSnapshot {
+  id          String   @id @default(cuid())
+  noteId       String
+  createdById String?
+  ydocState   String
+  createdAt   DateTime @default(now())
+  note        Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  createdBy   User?    @relation("SnapshotCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([noteId, createdAt])
+}
