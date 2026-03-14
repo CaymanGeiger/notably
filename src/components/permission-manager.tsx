@@ -291,40 +291,40 @@ export function PermissionManager({
       <div className="stack">
         {sortedPermissions.map((permission) => (
           <div className="permission-row" key={permission.user.id}>
-            <div className="permission-row-ident">
-              <span className="permission-row-avatar" aria-hidden="true">
-                {memberInitials(permission.user)}
-              </span>
+            <span className="permission-row-avatar" aria-hidden="true">
+              {memberInitials(permission.user)}
+            </span>
+            <div className="permission-row-main">
               <div className="permission-row-copy">
                 <strong>{memberLabel(permission.user)}</strong>
                 <p className="muted-text">{permission.user.email}</p>
               </div>
-            </div>
-            <div className="permission-row-controls">
-              <select
-                value={draftRoles[permission.user.id] ?? permission.role}
-                onChange={(event) =>
-                  setDraftRoles((current) => ({
-                    ...current,
-                    [permission.user.id]: event.target.value as Role,
-                  }))
-                }
-                disabled={isBusy}
-              >
-                {roleOptions().map((role) => (
-                  <option key={role} value={role}>
-                    {roleLabel(role)}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                className="primary-btn permission-save-btn"
-                disabled={isBusy}
-                onClick={() => updatePermission(permission.user.id)}
-              >
-                Save
-              </button>
+              <div className="permission-row-controls">
+                <select
+                  value={draftRoles[permission.user.id] ?? permission.role}
+                  onChange={(event) =>
+                    setDraftRoles((current) => ({
+                      ...current,
+                      [permission.user.id]: event.target.value as Role,
+                    }))
+                  }
+                  disabled={isBusy}
+                >
+                  {roleOptions().map((role) => (
+                    <option key={role} value={role}>
+                      {roleLabel(role)}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="primary-btn permission-save-btn"
+                  disabled={isBusy}
+                  onClick={() => updatePermission(permission.user.id)}
+                >
+                  Save
+                </button>
+              </div>
             </div>
           </div>
         ))}
