@@ -7,12 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:seed:demo": "node prisma/seed-demo-user.mjs"
+    "db:seed:demo": "node prisma/seed-demo-user.mjs",
+    "db:sync:turso": "node --env-file=.env scripts/sync-sqlite-to-turso.mjs",
+    "db:sync:turso:dry": "node --env-file=.env scripts/sync-sqlite-to-turso.mjs --dry-run"
   },
   "dependencies": {
     "@blocknote/core": "^0.47.1",
     "@blocknote/mantine": "^0.47.1",
     "@blocknote/react": "^0.47.1",
+    "@libsql/client": "^0.17.0",
     "@liveblocks/client": "^3.15.0",
     "@liveblocks/node": "^3.15.0",
     "@liveblocks/react": "^3.15.0",
@@ -21,6 +24,7 @@
     "@mantine/hooks": "^8.3.16",
     "@mantine/utils": "^6.0.22",
     "@prisma/client": "^6.19.2",
+    "@libsql/client": "^0.15.15",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "lucide-react": "^0.577.0",
