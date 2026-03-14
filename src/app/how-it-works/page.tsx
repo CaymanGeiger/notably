@@ -77,11 +77,12 @@ export default async function HowItWorksPage() {
   const cookieStore = await cookies();
   const initialTheme = resolveThemeMode(cookieStore.get(themePreferenceCookieName)?.value);
   const user = await getCurrentUser();
+  const accountLabel = user ? (user.name?.trim() || user.email.split("@")[0] || "Account") : undefined;
 
   return (
     <main className="home-page tour-page">
       <HomeScrollEffects />
-      <PublicNav isSignedIn={Boolean(user)} initialTheme={initialTheme} />
+      <PublicNav isSignedIn={Boolean(user)} initialTheme={initialTheme} accountLabel={accountLabel} />
 
       <section className="tour-hero reveal">
         <div className="tour-hero-copy">

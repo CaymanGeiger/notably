@@ -1,5 +1,6 @@
 "use client";
 
+import { Eye, EyeOff } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -18,6 +19,9 @@ export function AuthForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState(DEMO_EMAIL);
   const [password, setPassword] = useState(DEMO_PASSWORD);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const signInRef = useRef<HTMLFormElement>(null);
@@ -44,10 +48,62 @@ export function AuthForm() {
     setError(null);
   }
 
+  function renderPasswordField({
+    id,
+    label,
+    value,
+    onChange,
+    placeholder,
+    isVisible,
+    onToggleVisibility,
+    required = true,
+  }: {
+    id: string;
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+    placeholder: string;
+    isVisible: boolean;
+    onToggleVisibility: () => void;
+    required?: boolean;
+  }) {
+    return (
+      <label className="field" htmlFor={id}>
+        {label}
+        <div className="password-input-wrap">
+          <input
+            id={id}
+            type={isVisible ? "text" : "password"}
+            required={required}
+            minLength={8}
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder={placeholder}
+          />
+          <button
+            type="button"
+            className="password-visibility-btn"
+            onClick={onToggleVisibility}
+            aria-label={isVisible ? `Hide ${label.toLowerCase()}` : `Show ${label.toLowerCase()}`}
+            aria-pressed={isVisible}
+          >
+            {isVisible ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
+          </button>
+        </div>
+      </label>
+    );
+  }
+
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setError(null);
+
+    if (mode === "register" && password !== confirmPassword) {
+      setError("Password and confirm password must match.");
+      return;
+    }
+
     setIsSubmitting(true);
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => {
@@ -156,17 +212,15 @@ export function AuthForm() {
                 />
               </label>
 
-              <label className="field">
-                Password
-                <input
-                  type="password"
-                  required
-                  minLength={8}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="At least 8 characters"
-                />
-              </label>
+              {renderPasswordField({
+                id: "signin-password",
+                label: "Password",
+                value: password,
+                onChange: setPassword,
+                placeholder: "At least 8 characters",
+                isVisible: showPassword,
+                onToggleVisibility: () => setShowPassword((current) => !current),
+              })}
 
               {error ? <p className="error-text">{error}</p> : null}
 
@@ -203,17 +257,25 @@ export function AuthForm() {
                 />
               </label>
 
-              <label className="field">
-                Password
-                <input
-                  type="password"
-                  required
-                  minLength={8}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="At least 8 characters"
-                />
-              </label>
+              {renderPasswordField({
+                id: "register-password",
+                label: "Password",
+                value: password,
+                onChange: setPassword,
+                placeholder: "At least 8 characters",
+                isVisible: showPassword,
+                onToggleVisibility: () => setShowPassword((current) => !current),
+              })}
+
+              {renderPasswordField({
+                id: "register-confirm-password",
+                label: "Confirm Password",
+                value: confirmPassword,
+                onChange: setConfirmPassword,
+                placeholder: "Re-enter your password",
+                isVisible: showConfirmPassword,
+                onToggleVisibility: () => setShowConfirmPassword((current) => !current),
+              })}
 
               {error ? <p className="error-text">{error}</p> : null}
 

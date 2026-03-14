@@ -1,10 +1,12 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
+import { AccountAvatarLink } from "@/components/account-avatar-link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { ThemeMode } from "@/lib/theme";
 
 type PublicNavProps = {
+  accountLabel?: string;
   animateBrand?: boolean;
   isSignedIn: boolean;
   initialTheme: ThemeMode;
@@ -20,6 +22,7 @@ const brandLetters = "Notably".split("").map((character, index) => ({
 }));
 
 export function PublicNav({
+  accountLabel,
   animateBrand = false,
   isSignedIn,
   initialTheme,
@@ -52,6 +55,9 @@ export function PublicNav({
             Sign In
           </Link>
         )}
+        {isSignedIn && accountLabel ? (
+          <AccountAvatarLink label={accountLabel} variant="chip" />
+        ) : null}
         <ThemeToggle initialTheme={initialTheme} />
         <Link className="primary-btn" href={isSignedIn ? "/workspaces" : "/signin"}>
           {isSignedIn ? "Go To Workspace" : "Create Account"}

@@ -8,6 +8,7 @@ import { NoteChatPanel } from "@/components/note-chat-panel";
 import { NoteRoomProvider } from "@/components/note-room-provider";
 import { NoteSettings } from "@/components/note-settings";
 import { PermissionManager } from "@/components/permission-manager";
+import { AccountAvatarLink } from "@/components/account-avatar-link";
 import { SignOutButton } from "@/components/signout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getNoteAccessForUser } from "@/lib/note-access";
@@ -107,6 +108,7 @@ export default async function NotePage({ params }: NotePageProps) {
   const canEdit = canEditNote(access.role);
   const canManage = canManageNote(access.role);
   const canMessage = access.role !== "VIEWER" || note.viewerCanMessage;
+  const userDisplayName = (user.name?.trim() || user.email.split("@")[0]).slice(0, 60);
 
   return (
     <main className="app-shell note-shell">
@@ -126,6 +128,7 @@ export default async function NotePage({ params }: NotePageProps) {
           </div>
         </div>
         <div className="note-header-actions">
+          <AccountAvatarLink label={userDisplayName} variant="chip" />
           <ThemeToggle initialTheme={initialTheme} />
           <SignOutButton />
         </div>

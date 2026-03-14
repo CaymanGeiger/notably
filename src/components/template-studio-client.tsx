@@ -23,6 +23,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import { AccountAvatarLink } from "@/components/account-avatar-link";
 import { SignOutButton } from "@/components/signout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { defaultThemeMode, resolveThemeMode, type ThemeMode } from "@/lib/theme";
@@ -564,7 +565,9 @@ export function TemplateStudioClient({
             </div>
 
             <div className="workspace-mobile-actions template-mobile-actions">
-              <div className="workspace-mobile-account">{userDisplayName}</div>
+              <div className="workspace-mobile-account">
+                <AccountAvatarLink label={userDisplayName} />
+              </div>
               <button
                 type="button"
                 className="workspace-action-btn primary"
@@ -672,7 +675,7 @@ export function TemplateStudioClient({
           </div>
 
           <div className="template-sidebar-footer">
-            <strong>{userDisplayName}</strong>
+            <AccountAvatarLink label={userDisplayName} />
             <p>
               {selectedWorkspace
                 ? `${selectedWorkspace.templateCount} templates · ${selectedWorkspace.noteCount} docs`

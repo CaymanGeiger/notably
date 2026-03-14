@@ -18,10 +18,11 @@ export default async function PrivacyPage() {
   const cookieStore = await cookies();
   const initialTheme = resolveThemeMode(cookieStore.get(themePreferenceCookieName)?.value);
   const user = await getCurrentUser();
+  const accountLabel = user ? (user.name?.trim() || user.email.split("@")[0] || "Account") : undefined;
 
   return (
     <main className="home-page info-page">
-      <PublicNav isSignedIn={Boolean(user)} initialTheme={initialTheme} />
+      <PublicNav isSignedIn={Boolean(user)} initialTheme={initialTheme} accountLabel={accountLabel} />
 
       <section className="home-section reveal info-hero">
         <div className="section-head">

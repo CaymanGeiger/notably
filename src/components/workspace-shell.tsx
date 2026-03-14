@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 
 import { SignOutButton } from "@/components/signout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { AccountAvatarLink } from "@/components/account-avatar-link";
 import type { ThemeMode } from "@/lib/theme";
 
 const TemplatePreviewPanel = dynamic(
@@ -806,7 +807,9 @@ export function WorkspaceShell({
         </div>
 
         <div className="workspace-mobile-actions">
-          <div className="workspace-mobile-account">{userDisplayName}</div>
+          <div className="workspace-mobile-account">
+            <AccountAvatarLink label={userDisplayName} />
+          </div>
           <button
             type="button"
             className="workspace-action-btn ghost"
@@ -886,7 +889,9 @@ export function WorkspaceShell({
           {inviteNotice ? <p className="workspace-success">{inviteNotice}</p> : null}
         </section>
 
-        <div className="workspace-footer-user">{userDisplayName}</div>
+        <div className="workspace-footer-user">
+          <AccountAvatarLink label={userDisplayName} />
+        </div>
       </aside>
 
       <section className="workspace-main">
