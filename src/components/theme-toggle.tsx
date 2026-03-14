@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 
 import {
+  defaultThemeMode,
   resolveThemeMode,
   themePreferenceCookieName,
   themePreferenceStorageKey,
@@ -11,7 +12,7 @@ import {
 
 function getThemeSnapshot(): ThemeMode {
   if (typeof document === "undefined") {
-    return "dark";
+    return defaultThemeMode;
   }
 
   return resolveThemeMode(document.documentElement.getAttribute("data-theme"));
@@ -47,7 +48,7 @@ type ThemeToggleProps = {
   initialTheme?: ThemeMode;
 };
 
-export function ThemeToggle({ className, initialTheme = "dark" }: ThemeToggleProps) {
+export function ThemeToggle({ className, initialTheme = defaultThemeMode }: ThemeToggleProps) {
   const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, () => initialTheme);
 
   function toggleTheme() {

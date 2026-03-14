@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import * as Y from "yjs";
 
 import { decodeBase64ToYDocState, noteContentFragmentName } from "@/lib/ydoc-state";
+import { defaultThemeMode, resolveThemeMode } from "@/lib/theme";
 
 type TemplatePreviewPanelProps = {
   contentYdocState: string | null;
@@ -19,10 +20,10 @@ function emptyTemplateBlocks(): PartialBlock[] {
 
 function getThemeMode(): "light" | "dark" {
   if (typeof document === "undefined") {
-    return "dark";
+    return defaultThemeMode;
   }
 
-  return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+  return resolveThemeMode(document.documentElement.getAttribute("data-theme"));
 }
 
 function getBlocksFromEncodedState(
@@ -55,7 +56,7 @@ export function TemplatePreviewPanel({ contentYdocState }: TemplatePreviewPanelP
     [],
   );
 
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const [theme, setTheme] = useState<"light" | "dark">(defaultThemeMode);
   const lastAppliedStateRef = useRef<string | null>(null);
 
   useEffect(() => {

@@ -14,6 +14,7 @@ import {
   encodeYDocStateToBase64,
   noteContentFragmentName,
 } from "@/lib/ydoc-state";
+import { defaultThemeMode, resolveThemeMode } from "@/lib/theme";
 
 type LiveNoteEditorProps = {
   noteId: string;
@@ -24,9 +25,10 @@ type AutosaveStatus = "saving" | "saved" | "error";
 
 function getThemeMode(): "light" | "dark" {
   if (typeof document === "undefined") {
-    return "dark";
+    return defaultThemeMode;
   }
-  return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+
+  return resolveThemeMode(document.documentElement.getAttribute("data-theme"));
 }
 
 function pickColor(value: string): string {

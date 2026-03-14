@@ -4,11 +4,11 @@ import Image from "next/image";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 
-import { resolveThemeMode, type ThemeMode } from "@/lib/theme";
+import { defaultThemeMode, resolveThemeMode, type ThemeMode } from "@/lib/theme";
 
 function getThemeSnapshot(): ThemeMode {
   if (typeof document === "undefined") {
-    return "dark";
+    return defaultThemeMode;
   }
 
   return resolveThemeMode(document.documentElement.getAttribute("data-theme"));

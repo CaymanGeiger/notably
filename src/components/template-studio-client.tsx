@@ -24,7 +24,7 @@ import {
 
 import { SignOutButton } from "@/components/signout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
-import type { ThemeMode } from "@/lib/theme";
+import { defaultThemeMode, resolveThemeMode, type ThemeMode } from "@/lib/theme";
 
 type TemplateWorkspace = {
   id: string;
@@ -85,10 +85,10 @@ function templateDelayStyle(delayMs: number): CSSProperties {
 
 function getThemeMode(): "light" | "dark" {
   if (typeof document === "undefined") {
-    return "dark";
+    return defaultThemeMode;
   }
 
-  return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+  return resolveThemeMode(document.documentElement.getAttribute("data-theme"));
 }
 
 function formatTimestamp(value: string): string {
