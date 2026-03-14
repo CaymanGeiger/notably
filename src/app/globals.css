@@ -562,6 +562,19 @@ button {
   }
 }
 
+@keyframes note-room-loading-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.86;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
 @keyframes workspace-modal-backdrop-enter {
   from {
     opacity: 0;
@@ -953,6 +966,71 @@ button {
 
 .note-main {
   min-height: 650px;
+}
+
+.note-room-loading {
+  min-height: 650px;
+}
+
+.note-room-loading-panel {
+  min-height: 0;
+}
+
+.note-room-loading-editor-shell {
+  display: flex;
+  align-items: flex-start;
+  min-height: 520px;
+  padding: 1rem;
+  border: 1px solid #303743;
+  border-radius: 12px;
+  background: #171a20;
+}
+
+.note-room-loading-status {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.05rem 0 0;
+}
+
+.note-room-loading-orb {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgb(224 107 73 / 14%);
+}
+
+.note-room-loading-orb-core {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #df6e45;
+  animation: note-room-loading-breathe 1.6s ease-in-out infinite;
+  box-shadow: 0 0 0 6px rgb(223 110 69 / 12%);
+}
+
+.note-room-loading-copy {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.note-room-loading-copy strong {
+  color: #f4f7ff;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.note-room-loading-copy p {
+  color: #a6afc0;
+  font-size: 0.92rem;
+}
+
+.note-room-loading-chat-scroll {
+  min-height: 0;
+  align-content: start;
 }
 
 .note-aside {
@@ -3430,6 +3508,28 @@ button {
   backdrop-filter: none;
 }
 
+:root[data-theme="light"] .note-room-loading-orb {
+  background: rgb(223 110 69 / 10%);
+}
+
+:root[data-theme="light"] .note-room-loading-orb-core {
+  background: #d96d46;
+  box-shadow: 0 0 0 6px rgb(217 109 70 / 10%);
+}
+
+:root[data-theme="light"] .note-room-loading-editor-shell {
+  border-color: #ddd5c8;
+  background: #fffdf8;
+}
+
+:root[data-theme="light"] .note-room-loading-copy strong {
+  color: #1f1913;
+}
+
+:root[data-theme="light"] .note-room-loading-copy p {
+  color: #6f5c4a;
+}
+
 :root[data-theme="light"] .note-shell h1,
 :root[data-theme="light"] .note-shell h2,
 :root[data-theme="light"] .note-shell h3 {
@@ -5411,6 +5511,7 @@ select::-ms-expand {
   .template-list-card,
   .template-editor-surface,
   .template-empty-stage,
+  .note-room-loading-orb-core,
   .hero-copy,
   .hero-side,
   .trust-strip,
