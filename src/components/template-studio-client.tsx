@@ -15,7 +15,6 @@ import {
 import {
   ArrowLeft,
   ChevronDown,
-  ChevronLeft,
   ChevronRight,
   LayoutTemplate,
   LoaderCircle,
@@ -505,35 +504,61 @@ export function TemplateStudioClient({
 
   return (
     <main className={`template-shell ${isSidebarCollapsed ? "is-sidebar-collapsed" : ""}`}>
-      <button
-        type="button"
-        className="template-shell-toggle"
-        onClick={() => setIsSidebarCollapsed((current) => !current)}
-        aria-label={isSidebarCollapsed ? "Open templates sidebar" : "Close templates sidebar"}
-        aria-pressed={isSidebarCollapsed}
-      >
-        {isSidebarCollapsed ? (
+      {isSidebarCollapsed ? (
+        <button
+          type="button"
+          className="template-shell-toggle"
+          onClick={() => setIsSidebarCollapsed(false)}
+          aria-label="Open templates sidebar"
+          aria-pressed="false"
+        >
           <ChevronRight size={18} aria-hidden="true" />
-        ) : (
-          <ChevronLeft size={18} aria-hidden="true" />
-        )}
-      </button>
+        </button>
+      ) : null}
 
       <div className="template-sidebar-slot">
         <aside className="template-sidebar">
           <div className="template-sidebar-head">
-            <Link href="/workspaces" className="template-back-link">
-              <ArrowLeft size={15} aria-hidden="true" />
-              <span>Workspaces</span>
-            </Link>
+            <div className="template-sidebar-head-top">
+              <Link href="/workspaces" className="template-back-link">
+                <ArrowLeft size={15} aria-hidden="true" />
+                <span>Workspaces</span>
+              </Link>
+              <button
+                type="button"
+                className="template-sidebar-collapse-btn"
+                onClick={() => setIsSidebarCollapsed(true)}
+              >
+                Collapse
+              </button>
+            </div>
+
+            <div className="workspace-mobile-actions template-mobile-actions">
+              <button
+                type="button"
+                className="workspace-action-btn primary"
+                onClick={handleUseTemplate}
+                disabled={!activeTemplate || isUsingTemplate}
+              >
+                {isUsingTemplate ? (
+                  <>
+                    <LoaderCircle className="template-spinner" size={16} aria-hidden="true" />
+                    <span>Creating doc</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={16} aria-hidden="true" />
+                    <span>Use template</span>
+                  </>
+                )}
+              </button>
+              <ThemeToggle initialTheme={initialTheme} />
+              <SignOutButton className="workspace-signout" />
+            </div>
 
             <div className="template-sidebar-copy">
-              <p className="workspace-label">Templates</p>
               <h1>Template studio</h1>
-              <p>
-                Build reusable starting points for docs so new work begins with structure,
-                not cleanup.
-              </p>
+              <p>Reusable note structures for faster starts.</p>
             </div>
           </div>
 
@@ -641,16 +666,6 @@ export function TemplateStudioClient({
           </div>
 
           <div className="template-top-actions">
-            <button
-              type="button"
-              className="workspace-action-btn ghost"
-              onClick={() => {
-                void flushAutosave();
-              }}
-              disabled={!activeTemplate || saveStatus === "saving"}
-            >
-              Save now
-            </button>
             <button
               type="button"
               className="workspace-action-btn primary"
