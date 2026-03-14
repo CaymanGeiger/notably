@@ -142,7 +142,7 @@ export default async function HomePage() {
             <Link className="primary-btn" href={user ? "/workspaces" : "/signin"}>
               {user ? "Continue To Workspaces" : "Get Started"}
             </Link>
-            <Link className="ghost-btn" href="/signin">
+            <Link className="ghost-btn" href="/how-it-works">
               See How It Works
             </Link>
           </div>
