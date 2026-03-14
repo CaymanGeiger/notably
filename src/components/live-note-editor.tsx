@@ -1,6 +1,6 @@
 "use client";
 
-import { FocusEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FocusEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
@@ -81,6 +81,7 @@ export function LiveNoteEditor({ noteId, canEdit }: LiveNoteEditorProps) {
   const [autosaveError, setAutosaveError] = useState<string | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">(getThemeMode);
   const autosaveTimerRef = useRef<number | null>(null);
+  const editingPresenceTimerRef = useRef<number | null>(null);
   const saveInFlightRef = useRef(false);
   const pendingEncodedStateRef = useRef<string | null>(null);
   const lastSavedEncodedStateRef = useRef<string | null>(null);
@@ -88,16 +89,15 @@ export function LiveNoteEditor({ noteId, canEdit }: LiveNoteEditorProps) {
   const [, updateMyPresence] = useMyPresence();
   const others = useOthers();
 
-  const activeEditors = useMemo(() => {
-    return others
-      .filter(
-        (other) =>
-          Boolean((other.presence as { isEditing?: boolean } | undefined)?.isEditing),
-      )
-      .map((other) => {
-        const info = other.info as { name?: string; email?: string } | undefined;
-        return info?.name ?? info?.email ?? "Collaborator";
-      });
+  const connectedCollaborators = useMemo(() => {
+    return Array.from(
+      new Set(
+        others.map((other) => {
+          const info = other.info as { name?: string; email?: string } | undefined;
+          return info?.name ?? info?.email ?? "Collaborator";
+        }),
+      ),
+    );
   }, [others]);
 
   const editorContainerRef = useRef<HTMLDivElement | null>(null);
@@ -115,10 +115,31 @@ export function LiveNoteEditor({ noteId, canEdit }: LiveNoteEditorProps) {
 
   useEffect(() => {
     return () => {
+      if (editingPresenceTimerRef.current !== null) {
+        window.clearTimeout(editingPresenceTimerRef.current);
+        editingPresenceTimerRef.current = null;
+      }
       yProvider.destroy();
       yDoc.destroy();
     };
   }, [yDoc, yProvider]);
+
+  const markEditingActive = useCallback(() => {
+    if (!canEdit) {
+      return;
+    }
+
+    updateMyPresence({ isEditing: true });
+
+    if (editingPresenceTimerRef.current !== null) {
+      window.clearTimeout(editingPresenceTimerRef.current);
+    }
+
+    editingPresenceTimerRef.current = window.setTimeout(() => {
+      updateMyPresence({ isEditing: false });
+      editingPresenceTimerRef.current = null;
+    }, 2600);
+  }, [canEdit, updateMyPresence]);
 
   useEffect(() => {
     function syncTheme() {
@@ -282,6 +303,7 @@ export function LiveNoteEditor({ noteId, canEdit }: LiveNoteEditorProps) {
         return;
       }
 
+      markEditingActive();
       pendingEncodedStateRef.current = encodeYDocStateToBase64(yDoc);
       setAutosaveStatus("saving");
       setAutosaveError(null);
@@ -293,16 +315,16 @@ export function LiveNoteEditor({ noteId, canEdit }: LiveNoteEditorProps) {
     return () => {
       ignore = true;
       clearAutosaveTimer();
+      if (editingPresenceTimerRef.current !== null) {
+        window.clearTimeout(editingPresenceTimerRef.current);
+        editingPresenceTimerRef.current = null;
+      }
       yDoc.off("update", onYDocUpdate);
     };
-  }, [canEdit, noteId, yDoc]);
+  }, [canEdit, markEditingActive, noteId, yDoc]);
 
   function markEditing() {
-    if (!canEdit) {
-      return;
-    }
-
-    updateMyPresence({ isEditing: true });
+    markEditingActive();
   }
 
   function clearEditing(event: FocusEvent<HTMLDivElement>) {
@@ -310,6 +332,10 @@ export function LiveNoteEditor({ noteId, canEdit }: LiveNoteEditorProps) {
     const hasFocusInside = nextTarget ? editorContainerRef.current?.contains(nextTarget) : false;
 
     if (!hasFocusInside) {
+      if (editingPresenceTimerRef.current !== null) {
+        window.clearTimeout(editingPresenceTimerRef.current);
+        editingPresenceTimerRef.current = null;
+      }
       updateMyPresence({ isEditing: false });
     }
   }
@@ -364,6 +390,8 @@ export function LiveNoteEditor({ noteId, canEdit }: LiveNoteEditorProps) {
         className="note-blocknote-shell"
         onFocus={markEditing}
         onBlur={clearEditing}
+        onKeyDownCapture={markEditing}
+        onPointerDownCapture={markEditing}
       >
         <BlockNoteView
           editor={editor}
@@ -379,10 +407,10 @@ export function LiveNoteEditor({ noteId, canEdit }: LiveNoteEditorProps) {
         />
       </div>
 
-      {activeEditors.length > 0 ? (
-        <p className="muted-text">Currently editing: {activeEditors.join(", ")}</p>
+      {connectedCollaborators.length > 0 ? (
+        <p className="muted-text">In this note: {connectedCollaborators.join(", ")}</p>
       ) : (
-        <p className="muted-text">No collaborators actively editing right now.</p>
+        <p className="muted-text">No other collaborators in this note right now.</p>
       )}
 
       {canEdit && autosaveError ? <p className="error-text">{autosaveError}</p> : null}

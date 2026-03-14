@@ -41,7 +41,7 @@ export function NoteRoomProvider({ roomId, children }: NoteRoomProviderProps) {
                   </div>
                 </div>
 
-                <p className="muted-text">No collaborators actively editing right now.</p>
+                <p className="muted-text">No other collaborators in this note right now.</p>
               </section>
 
               <section className="panel stack note-room-loading-chat">
