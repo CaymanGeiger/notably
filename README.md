@@ -1,43 +1,66 @@
-# Redstone Collaborative
+# Notably
 
-Redstone Collaborative is a local-first collaborative notes app built with Next.js, Prisma/SQLite, and Liveblocks + Yjs.
+Notably is a local-first collaborative notes app for teams that need clear structure, controlled sharing, and realtime collaboration without messy handoffs.
 
-## Core Capabilities
+## What It Does
 
-- Email/password accounts with session cookies
-- Workspaces and workspace membership
-- Notes with per-note ACL (`OWNER`, `EDITOR`, `VIEWER`)
-- Realtime collaborative note editing (Liveblocks + Yjs)
-- Durable per-note chat history in SQLite with realtime fanout
-- Snapshot timeline for note recovery/replay workflows
+- Workspace-based note organization
+- Per-note permissions with `OWNER`, `EDITOR`, and `VIEWER` roles
+- Realtime collaborative editing with Liveblocks + Yjs
+- Note-level chat and viewer chat controls
+- Reusable note templates
+- Note archiving
+- Public marketing pages, including a screenshot-backed `See How It Works` walkthrough
 
 ## Stack
 
-- Next.js App Router + TypeScript
-- Prisma + SQLite
-- Liveblocks + Yjs
+- Next.js App Router
+- TypeScript
+- Prisma
+- SQLite
+- Liveblocks
+- Yjs
+- BlockNote
+
+## Screens
+
+![Workspace overview](public/assets/how-it-works/workspace-overview.png)
+
+![Template studio](public/assets/how-it-works/template-studio.png)
 
 ## Local Setup
 
-1. Install dependencies:
+1. Install dependencies.
 
 ```bash
 npm install
 ```
 
-2. Configure env:
+2. Copy environment variables.
 
 ```bash
 cp .env.example .env
 ```
 
-3. Generate Prisma client:
+3. Generate the Prisma client.
 
 ```bash
 npx prisma generate
 ```
 
-4. Start the app:
+4. Push the schema into the local SQLite database.
+
+```bash
+npx prisma db push
+```
+
+5. Seed the demo user and starter workspace.
+
+```bash
+npm run db:seed:demo
+```
+
+6. Start the app.
 
 ```bash
 npm run dev
@@ -45,28 +68,53 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Demo User
+
+Default demo credentials from the seed script:
+
+- Email: `demo@notably.app`
+- Password: `DemoPass123!`
+
+These can be overridden with the demo env vars in [`.env.example`](.env.example).
+
 ## Environment Variables
 
-- `DATABASE_URL`: SQLite path (default `file:./dev.db` relative to `prisma/schema.prisma`)
-- `LIVEBLOCKS_SECRET_KEY`: required for realtime room auth (`/api/liveblocks-auth`)
-- `SESSION_TTL_DAYS`: auth session duration (default `30`)
+- `DATABASE_URL`
+- `LIVEBLOCKS_SECRET_KEY`
+- `SESSION_TTL_DAYS`
+- `APP_URL`
+- `RESEND_API_KEY`
+- `RESEND_FROM_EMAIL`
+- `NEXT_PUBLIC_DEMO_USER_EMAIL`
+- `NEXT_PUBLIC_DEMO_USER_PASSWORD`
+- `DEMO_USER_EMAIL`
+- `DEMO_USER_PASSWORD`
+- `DEMO_USER_NAME`
+- `DEMO_WORKSPACE_NAME`
+- `DEMO_NOTE_TITLE`
 
-## Implemented API Routes
+## Useful Scripts
 
-- `POST /api/liveblocks-auth`
-- `GET|POST /api/workspaces`
-- `GET|POST /api/notes`
-- `GET|PATCH /api/notes/:id`
-- `GET|POST /api/notes/:id/messages`
-- `POST /api/notes/:id/permissions`
-- `PATCH /api/notes/:id/permissions/:userId`
-- `GET|POST /api/notes/:id/snapshots`
-- `POST /api/auth/register`
-- `POST /api/auth/signin`
-- `POST /api/auth/signout`
-- `GET /api/auth/session`
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+npm run db:seed:demo
+```
 
-## Notes
+## Data Model
 
-- Room access is always authorized server-side through Prisma ACL checks in `/api/liveblocks-auth`.
-- Liveblocks does not directly access the database.
+Core Prisma models:
+
+- `User`
+- `Session`
+- `Workspace`
+- `WorkspaceMember`
+- `Note`
+- `NoteTemplate`
+- `NotePermission`
+- `NoteMessage`
+- `NoteSnapshot`
+
+Schema source: [`prisma/schema.prisma`](prisma/schema.prisma)
