@@ -1,5 +1,8 @@
 import { createInterface } from "node:readline/promises";
+import { readdir, readFile } from "node:fs/promises";
+import path from "node:path";
 import { stdin as input, stdout as output } from "node:process";
+import { fileURLToPath } from "node:url";
 
 import { createClient } from "@libsql/client";
 import { PrismaClient } from "@prisma/client";
@@ -13,6 +16,9 @@ const isForced = args.has("--force");
 const localDatabaseUrl = process.env.DATABASE_URL;
 const tursoDatabaseUrl = process.env.TURSO_DATABASE_URL;
 const tursoAuthToken = process.env.TURSO_AUTH_TOKEN;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const prismaMigrationsDir = path.resolve(__dirname, "../prisma/migrations");
 
 const tableSpecs = [
   {
@@ -115,6 +121,65 @@ function serializeValue(value) {
   return value;
 }
 
+function splitSqlStatements(sql) {
+  return sql
+    .split(/;\s*(?:\r?\n|$)/)
+    .map((statement) => statement.trim())
+    .filter(Boolean);
+}
+
+function isIgnorableSchemaError(error) {
+  const message = String(error?.message ?? "");
+
+  return (
+    message.includes("already exists") ||
+    message.includes("duplicate column name") ||
+    message.includes("cannot add a PRIMARY KEY column")
+  );
+}
+
+async function loadMigrationStatements() {
+  const entries = await readdir(prismaMigrationsDir, { withFileTypes: true });
+  const migrationDirs = entries
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort((left, right) => left.localeCompare(right));
+
+  const statements = [];
+
+  for (const migrationDir of migrationDirs) {
+    const migrationPath = path.join(prismaMigrationsDir, migrationDir, "migration.sql");
+    const sql = await readFile(migrationPath, "utf8");
+
+    for (const statement of splitSqlStatements(sql)) {
+      statements.push({
+        migrationDir,
+        statement,
+      });
+    }
+  }
+
+  return statements;
+}
+
+async function ensureRemoteSchema(turso) {
+  const statements = await loadMigrationStatements();
+
+  for (const { migrationDir, statement } of statements) {
+    try {
+      await turso.execute(statement);
+    } catch (error) {
+      if (isIgnorableSchemaError(error)) {
+        continue;
+      }
+
+      console.error(`Schema sync failed while applying migration ${migrationDir}.`);
+      console.error(statement);
+      throw error;
+    }
+  }
+}
+
 async function confirmSync(rowCounts) {
   if (isForced) {
     return;
@@ -174,6 +239,8 @@ async function main() {
     url: tursoDatabaseUrl,
     authToken: tursoAuthToken,
   });
+
+  await ensureRemoteSchema(turso);
 
   const transaction = await turso.transaction("write");
 

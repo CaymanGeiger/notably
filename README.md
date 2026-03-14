@@ -79,7 +79,9 @@ These can be overridden with the demo env vars in [`.env.example`](.env.example)
 
 ## Environment Variables
 
-- `DATABASE_URL`
+- `DATABASE_URL` for local SQLite development
+- `TURSO_DATABASE_URL` for production Turso reads/writes
+- `TURSO_AUTH_TOKEN` for production Turso reads/writes
 - `LIVEBLOCKS_SECRET_KEY`
 - `SESSION_TTL_DAYS`
 - `APP_URL`

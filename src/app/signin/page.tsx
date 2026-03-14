@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 import { AuthForm } from "@/components/auth-form";
 import { getCurrentUser } from "@/lib/session";
@@ -15,8 +16,9 @@ export default async function SignInPage() {
     <main className="auth-shell">
       <section className="auth-layout reveal">
         <aside className="auth-brand stack">
-          <Link className="brand-pill" href="/">
-            Notably
+          <Link className="template-back-link" href="/">
+            <ArrowLeft size={15} aria-hidden="true" />
+            <span>Home</span>
           </Link>
           <h1>Access secure collaborative workspaces</h1>
           <p>
