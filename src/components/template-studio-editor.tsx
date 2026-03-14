@@ -142,6 +142,7 @@ export function TemplateStudioEditor({
         editor={editor}
         editable
         theme={theme}
+        autoFocus={false}
         formattingToolbar
         linkToolbar
         slashMenu
