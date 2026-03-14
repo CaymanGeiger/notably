@@ -2252,6 +2252,10 @@ button {
   color: #46382b;
 }
 
+:root[data-theme="light"] .workspace-mobile-account {
+  color: #46382b;
+}
+
 :root[data-theme="light"] .workspace-search-wrap input {
   border-color: #d9cbb5;
   background: #fffaf2;
@@ -5149,7 +5153,7 @@ select::-ms-expand {
   .workspace-mobile-account {
     display: block;
     width: 100%;
-    color: #c6cbd8;
+    color: #dce3f0;
     font-size: 0.9rem;
     font-weight: 500;
   }
@@ -5159,6 +5163,10 @@ select::-ms-expand {
   .workspace-mobile-actions .workspace-signout {
     height: 40px;
     min-height: 40px;
+  }
+
+  .template-sidebar-footer {
+    display: none;
   }
 
   .template-shell {

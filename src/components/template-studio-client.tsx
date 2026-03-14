@@ -534,6 +534,7 @@ export function TemplateStudioClient({
             </div>
 
             <div className="workspace-mobile-actions template-mobile-actions">
+              <div className="workspace-mobile-account">{userDisplayName}</div>
               <button
                 type="button"
                 className="workspace-action-btn primary"
