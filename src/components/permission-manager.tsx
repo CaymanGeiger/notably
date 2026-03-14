@@ -26,6 +26,35 @@ function roleOptions(): Role[] {
   return ["OWNER", "EDITOR", "VIEWER"];
 }
 
+function roleLabel(role: Role): string {
+  return role.charAt(0) + role.slice(1).toLowerCase();
+}
+
+function memberLabel(user: BasicUser): string {
+  return user.name?.trim() || user.email;
+}
+
+function memberInitials(user: BasicUser): string {
+  const source = user.name?.trim() || user.email.split("@")[0] || user.email;
+  const parts = source
+    .split(/[\s._-]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length === 0) {
+    return "A";
+  }
+
+  if (parts.length === 1) {
+    return parts[0].slice(0, 1).toUpperCase();
+  }
+
+  return parts
+    .slice(0, 2)
+    .map((part) => part.slice(0, 1).toUpperCase())
+    .join("");
+}
+
 type DisabledFieldTooltipProps = {
   message: string | null;
   children: ReactNode;
@@ -243,7 +272,7 @@ export function PermissionManager({
             >
               {roleOptions().map((role) => (
                 <option key={role} value={role}>
-                  {role}
+                  {roleLabel(role)}
                 </option>
               ))}
             </select>
@@ -262,11 +291,16 @@ export function PermissionManager({
       <div className="stack">
         {sortedPermissions.map((permission) => (
           <div className="permission-row" key={permission.user.id}>
-            <div>
-              <strong>{permission.user.name ?? permission.user.email}</strong>
-              <p className="muted-text">{permission.user.email}</p>
+            <div className="permission-row-ident">
+              <span className="permission-row-avatar" aria-hidden="true">
+                {memberInitials(permission.user)}
+              </span>
+              <div className="permission-row-copy">
+                <strong>{memberLabel(permission.user)}</strong>
+                <p className="muted-text">{permission.user.email}</p>
+              </div>
             </div>
-            <div className="inline-row">
+            <div className="permission-row-controls">
               <select
                 value={draftRoles[permission.user.id] ?? permission.role}
                 onChange={(event) =>
@@ -279,13 +313,13 @@ export function PermissionManager({
               >
                 {roleOptions().map((role) => (
                   <option key={role} value={role}>
-                    {role}
+                    {roleLabel(role)}
                   </option>
                 ))}
               </select>
               <button
                 type="button"
-                className="ghost-btn"
+                className="primary-btn permission-save-btn"
                 disabled={isBusy}
                 onClick={() => updatePermission(permission.user.id)}
               >
