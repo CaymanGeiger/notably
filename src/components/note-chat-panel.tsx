@@ -119,13 +119,13 @@ export function NoteChatPanel({
   return (
     <section className="panel stack">
       <div className="panel-header">
-        <h2>Note Chat</h2>
+        <h2>Discussion</h2>
         <span className="status-chip">{messages.length} messages</span>
       </div>
 
       <div className="chat-scroll">
         {messages.length === 0 ? (
-          <p className="muted-text">No messages yet.</p>
+          <p className="muted-text">No discussion yet.</p>
         ) : (
           messages.map((message) => (
             <article key={message.id} className="chat-message">
@@ -147,7 +147,7 @@ export function NoteChatPanel({
             onChange={(event) => setBody(event.target.value)}
             disabled={!canMessage || isSending}
             placeholder={
-              canMessage ? "Share context with collaborators..." : "Messaging disabled"
+              canMessage ? "Share context about this note..." : "Messaging disabled"
             }
             maxLength={4000}
           />

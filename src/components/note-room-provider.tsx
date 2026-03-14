@@ -46,18 +46,18 @@ export function NoteRoomProvider({ roomId, children }: NoteRoomProviderProps) {
 
               <section className="panel stack note-room-loading-chat">
                 <div className="panel-header">
-                  <h2>Note Chat</h2>
+                  <h2>Discussion</h2>
                   <span className="status-chip">Loading</span>
                 </div>
 
                 <div className="chat-scroll note-room-loading-chat-scroll">
-                  <p className="muted-text">Preparing chat history.</p>
+                  <p className="muted-text">Preparing discussion history.</p>
                 </div>
 
                 <div className="stack" aria-hidden="true">
                   <label className="field">
                     Message
-                    <textarea disabled placeholder="Chat will be ready in a moment" />
+                    <textarea disabled placeholder="Share context about this note..." />
                   </label>
                   <button type="button" className="primary-btn" disabled>
                     Send
