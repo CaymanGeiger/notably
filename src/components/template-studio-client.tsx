@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -149,6 +150,35 @@ export function TemplateStudioClient({
   const saveInFlightRef = useRef(false);
   const queuedSaveRef = useRef(false);
   const lastSavedSnapshotRef = useRef<string | null>(null);
+
+  useLayoutEffect(() => {
+    const historyWithScrollRestoration = window.history as History & {
+      scrollRestoration?: "auto" | "manual";
+    };
+    const previousScrollRestoration = historyWithScrollRestoration.scrollRestoration;
+    const resetScroll = () => {
+      window.scrollTo(0, 0);
+      document.scrollingElement?.scrollTo(0, 0);
+    };
+
+    if (typeof previousScrollRestoration === "string") {
+      historyWithScrollRestoration.scrollRestoration = "manual";
+    }
+
+    resetScroll();
+    requestAnimationFrame(() => {
+      requestAnimationFrame(resetScroll);
+    });
+
+    window.addEventListener("pageshow", resetScroll);
+
+    return () => {
+      window.removeEventListener("pageshow", resetScroll);
+      if (typeof previousScrollRestoration === "string") {
+        historyWithScrollRestoration.scrollRestoration = previousScrollRestoration;
+      }
+    };
+  }, []);
 
   const selectedWorkspace = useMemo(() => {
     return workspaceItems.find((workspace) => workspace.id === selectedWorkspaceId) ?? null;
