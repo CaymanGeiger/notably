@@ -54,9 +54,12 @@ export async function clearSession(): Promise<void> {
   cookieStore.delete(SESSION_COOKIE);
 }
 
-export async function getCurrentUser(): Promise<SessionUser | null> {
+export async function getCurrentUser(options?: {
+  clearInvalidCookie?: boolean;
+}): Promise<SessionUser | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
+  const clearInvalidCookie = options?.clearInvalidCookie ?? false;
 
   if (!token) {
     return null;
@@ -78,7 +81,9 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   });
 
   if (!session) {
-    cookieStore.delete(SESSION_COOKIE);
+    if (clearInvalidCookie) {
+      cookieStore.delete(SESSION_COOKIE);
+    }
     return null;
   }
 
@@ -88,7 +93,9 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
         id: session.id,
       },
     });
-    cookieStore.delete(SESSION_COOKIE);
+    if (clearInvalidCookie) {
+      cookieStore.delete(SESSION_COOKIE);
+    }
     return null;
   }
 
