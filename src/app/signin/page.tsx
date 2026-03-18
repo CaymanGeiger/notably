@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { AuthForm } from "@/components/auth-form";
 import { getCurrentUser } from "@/lib/session";
+
+export const metadata: Metadata = {
+  title: "Sign In | Notably",
+  description:
+    "Access secure Notably workspaces to collaborate on shared notes, templates, and controlled permissions.",
+};
 
 export default async function SignInPage() {
   const user = await getCurrentUser();

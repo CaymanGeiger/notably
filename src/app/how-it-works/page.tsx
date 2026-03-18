@@ -10,7 +10,7 @@ import { getCurrentUser } from "@/lib/session";
 import { resolveThemeMode, themePreferenceCookieName } from "@/lib/theme";
 
 export const metadata: Metadata = {
-  title: "See How It Works | Notably",
+  title: "How It Works | Notably",
   description: "A visual walkthrough of how teams use Notably for workspaces, templates, and note permissions.",
 };
 

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -5,6 +6,11 @@ import { WorkspaceShell } from "@/components/workspace-shell";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { resolveThemeMode, themePreferenceCookieName } from "@/lib/theme";
+
+export const metadata: Metadata = {
+  title: "Workspaces | Notably",
+  description: "Browse shared workspaces, notes, templates, and archive state inside Notably.",
+};
 
 export default async function WorkspacesPage() {
   const cookieStore = await cookies();

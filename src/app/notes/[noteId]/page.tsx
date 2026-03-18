@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
@@ -22,6 +23,32 @@ type NotePageProps = {
     noteId: string;
   }>;
 };
+
+export async function generateMetadata({ params }: NotePageProps): Promise<Metadata> {
+  const { noteId } = await params;
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return {
+      title: "Note | Notably",
+      description: "Secure collaborative note editing in Notably.",
+    };
+  }
+
+  const access = await getNoteAccessForUser(noteId, user.id);
+
+  if (!access) {
+    return {
+      title: "Note | Notably",
+      description: "Secure collaborative note editing in Notably.",
+    };
+  }
+
+  return {
+    title: `${access.title} | Notably`,
+    description: `Open ${access.title} in ${access.workspaceName} and manage discussion, editing, and permissions in Notably.`,
+  };
+}
 
 export default async function NotePage({ params }: NotePageProps) {
   const cookieStore = await cookies();

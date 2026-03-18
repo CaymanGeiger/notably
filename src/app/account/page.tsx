@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -9,6 +10,11 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { resolveThemeMode, themePreferenceCookieName } from "@/lib/theme";
+
+export const metadata: Metadata = {
+  title: "Account Settings | Notably",
+  description: "Manage your Notably profile, password, and account activity in one place.",
+};
 
 export default async function AccountPage() {
   const cookieStore = await cookies();
